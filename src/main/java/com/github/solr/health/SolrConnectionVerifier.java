@@ -5,13 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.stereotype.Component;
 
 /**
  * @author Ilja Avelidi
  *
  */
-@Component
 public class SolrConnectionVerifier implements ApplicationRunner {
 	
 	/**  */
