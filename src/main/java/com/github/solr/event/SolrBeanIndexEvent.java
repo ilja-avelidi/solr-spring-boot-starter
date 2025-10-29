@@ -1,4 +1,4 @@
-package com.github.solr.indexing.event;
+package com.github.solr.event;
 
 import com.github.solr.bean.AbstractSolrBean;
 
@@ -6,7 +6,7 @@ import com.github.solr.bean.AbstractSolrBean;
  * @author Ilja Avelidi
  *
  */
-public class SolrBeanIndexEvent extends AbstractSolrBeanEvent {
+public class SolrBeanIndexEvent extends SolrBeanEvent {
 	
 	/**  */
 	private static final long serialVersionUID = 1L;

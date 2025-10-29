@@ -1,12 +1,13 @@
-package com.github.solr.indexing.event;
+package com.github.solr.event;
 
+import org.springframework.context.ApplicationEvent;
 import com.github.solr.bean.AbstractSolrBean;
 
 /**
  * @author Ilja Avelidi
  *
  */
-public class SolrBeanRemoveEvent extends AbstractSolrBeanEvent {
+public abstract class SolrBeanEvent extends ApplicationEvent {
 	
 	/**  */
 	private static final long serialVersionUID = 1L;
@@ -14,9 +15,10 @@ public class SolrBeanRemoveEvent extends AbstractSolrBeanEvent {
 	/**
 	 * @param solrBean
 	 */
-	public SolrBeanRemoveEvent(AbstractSolrBean solrBean) {
+	public SolrBeanEvent(AbstractSolrBean solrBean) {
 		
 		super(solrBean);
 		
 	}
+	
 }
