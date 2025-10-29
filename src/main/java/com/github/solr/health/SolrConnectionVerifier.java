@@ -3,8 +3,12 @@ package com.github.solr.health;
 import org.apache.solr.client.solrj.SolrClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.ApplicationEventPublisher;
+import com.github.solr.event.SolrReadyEvent;
 
 /**
  * @author Ilja Avelidi
@@ -17,6 +21,14 @@ public class SolrConnectionVerifier implements ApplicationRunner {
 	
 	/**  */
 	private final Logger log = LoggerFactory.getLogger(SolrConnectionVerifier.class);
+	
+	/**  */
+	@Autowired
+	private ApplicationEventPublisher eventPublisher;
+	
+	/**  */
+	@Value("${solr.core.url}")
+	private String solrCoreUrl;
 	
 	/**
 	 * @param solrClient
@@ -41,6 +53,8 @@ public class SolrConnectionVerifier implements ApplicationRunner {
 			this.solrClient.ping();
 			
 			this.log.info("Successfully connected to Solr");
+			
+			this.eventPublisher.publishEvent(new SolrReadyEvent(this.solrCoreUrl));
 			
 		} catch (Exception e) {
 			

@@ -5,13 +5,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import com.github.solr.bean.AbstractSolrBean;
-import com.github.solr.indexing.event.AbstractSolrBeanEvent;
-import com.github.solr.indexing.event.SolrBeanIndexEvent;
-import com.github.solr.indexing.event.SolrBeanRemoveEvent;
+import com.github.solr.event.SolrBeanEvent;
+import com.github.solr.event.SolrBeanIndexEvent;
+import com.github.solr.event.SolrBeanIndexedEvent;
+import com.github.solr.event.SolrBeanRemoveEvent;
+import com.github.solr.event.SolrBeanRemovedEvent;
 import com.github.solr.repository.SolrBeanRepository;
 
 /**
@@ -21,7 +24,7 @@ import com.github.solr.repository.SolrBeanRepository;
 public class SolrAsyncIndexer {
 	
 	/**  */
-	private final BlockingQueue<AbstractSolrBeanEvent> queue = new LinkedBlockingQueue<>(10_000);
+	private final BlockingQueue<SolrBeanEvent> queue = new LinkedBlockingQueue<>(10_000);
 	
 	/**  */
 	private final Logger log = LoggerFactory.getLogger(SolrAsyncIndexer.class);
@@ -30,12 +33,16 @@ public class SolrAsyncIndexer {
 	@Autowired
 	private SolrBeanRepository solrBeanRepository;
 	
+	/**  */
+	@Autowired
+	private ApplicationEventPublisher eventPublisher;
+	
 	/**
 	 * @param event
 	 */
 	@Async
 	@EventListener
-	public void processEvent(AbstractSolrBeanEvent event) {
+	public void processEvent(SolrBeanEvent event) {
 		
 		try {
 			
@@ -58,7 +65,7 @@ public class SolrAsyncIndexer {
 		
 		while (!this.queue.isEmpty()) {
 			
-			AbstractSolrBeanEvent event = this.queue.take();
+			SolrBeanEvent event = this.queue.take();
 			AbstractSolrBean solrBean = (AbstractSolrBean)event.getSource();
 			
 			String id = solrBean.getId();
@@ -67,13 +74,20 @@ public class SolrAsyncIndexer {
 			
 			try {
 				
-				if (event instanceof SolrBeanIndexEvent)
+				if (event instanceof SolrBeanIndexEvent) {
 					
 					this.solrBeanRepository.save(solrBean);
-				
-				else if (event instanceof SolrBeanRemoveEvent)
+					
+					this.eventPublisher.publishEvent(new SolrBeanIndexedEvent(solrBean));
+					
+				}
+				else if (event instanceof SolrBeanRemoveEvent) {
 					
 					this.solrBeanRepository.remove(id);
+					
+					this.eventPublisher.publishEvent(new SolrBeanRemovedEvent(solrBean));
+					
+				}
 				
 			} catch (Exception e) {
 				
