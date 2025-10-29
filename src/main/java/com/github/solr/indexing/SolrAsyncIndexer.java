@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import com.github.solr.bean.AbstractSolrBean;
 import com.github.solr.indexing.event.AbstractSolrBeanEvent;
 import com.github.solr.indexing.event.SolrBeanIndexEvent;
@@ -19,7 +18,6 @@ import com.github.solr.repository.SolrBeanRepository;
  * @author Ilja Avelidi
  *
  */
-@Component
 public class SolrAsyncIndexer {
 	
 	/**  */
@@ -45,7 +43,7 @@ public class SolrAsyncIndexer {
 			
 		} catch (InterruptedException e) {
 			
-			this.log.error("Failed to process event: {}", e.getMessage());
+			this.log.warn("Failed to process event: {}", e.getMessage());
 			
 		}
 		
@@ -69,19 +67,17 @@ public class SolrAsyncIndexer {
 			
 			try {
 				
-				switch (event) {
+				if (event instanceof SolrBeanIndexEvent)
 					
-					case SolrBeanIndexEvent e -> this.solrBeanRepository.save(solrBean);
+					this.solrBeanRepository.save(solrBean);
 				
-					case SolrBeanRemoveEvent e -> this.solrBeanRepository.remove(id);
-				
-					default -> throw new IllegalArgumentException("Unexpected type: " + event);
-				
-				}
+				else if (event instanceof SolrBeanRemoveEvent)
+					
+					this.solrBeanRepository.remove(id);
 				
 			} catch (Exception e) {
 				
-				this.log.error("Failed to process event: {}", e.getMessage(), e);
+				this.log.warn("Error while processing queue event: {}", e.getMessage());
 				
 			}
 			
