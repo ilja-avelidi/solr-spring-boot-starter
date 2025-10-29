@@ -1,5 +1,7 @@
 package com.github.solr.bean;
 
+import org.apache.solr.client.solrj.beans.Field;
+
 /**
  * @author Ilja Avelidi
  *
@@ -13,4 +15,14 @@ public abstract class AbstractSolrBean {
 	 */
 	public abstract String getId();
 	
+	
+	/**
+	 * @param id
+	 */
+	@Field("id")
+	void setId(@SuppressWarnings("unused") String id) {
+		
+		// no-op
+		
+	}
 }
