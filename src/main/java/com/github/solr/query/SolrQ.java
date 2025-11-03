@@ -1,7 +1,6 @@
 package com.github.solr.query;
 
 import java.util.List;
-import org.apache.solr.client.solrj.util.ClientUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -12,6 +11,48 @@ public final class SolrQ {
 	
 	/**  */
 	private final StringBuilder buffer = new StringBuilder();
+	
+	/**
+	 * @param buffer
+	 * @param name
+	 * @param val
+	 */
+	private static void appendField(StringBuilder buffer, String name, String val) {
+		buffer.append(name + ":" + val);
+	}
+	
+	
+	/**
+	 * @param name
+	 * @param val
+	 * @return builder operator
+	 */
+	public BuilderOperator<Query<SolrQ>> field(String name, String val) {
+		Query<SolrQ> q = new Query<>(this.buffer);
+		appendField(this.buffer, name, val);
+		return new BuilderOperator<>(q, this.buffer);
+		
+	}
+	
+	
+	/**
+	 * @return group
+	 */
+	public Group<BuilderOperator<SolrQ>> openGroup() {
+		this.buffer.append("(");
+		BuilderOperator<SolrQ> _parent = new BuilderOperator<>(this, this.buffer);
+		return new Group<>(_parent, this.buffer);
+	}
+	
+	
+	/**
+	 * @return parent
+	 */
+	public Parent<BuilderOperator<SolrQ>> parent() {
+		this.buffer.append("{!parent");
+		BuilderOperator<SolrQ> _parent = new BuilderOperator<>(this, this.buffer);
+		return new Parent<>(_parent, this.buffer);
+	}
 	
 	/**
 	 * @author Ilja Avelidi
@@ -38,9 +79,7 @@ public final class SolrQ {
 		 * @return builder operator
 		 */
 		public BuilderOperator<Query<T>> field(String name, String val) {
-			
-			this.buffer.append(name + ":" + ClientUtils.escapeQueryChars(val));
-			
+			appendField(this.buffer, name, val);
 			return new BuilderOperator<>(this, this.buffer);
 			
 		}
@@ -50,11 +89,9 @@ public final class SolrQ {
 		 * @return group
 		 */
 		public Group<BuilderOperator<Query<T>>> openGroup() {
-			
-			BuilderOperator<Query<T>> b = new BuilderOperator<>(this, this.buffer);
 			this.buffer.append("(");
-			
-			return new Group<>(b, this.buffer);
+			BuilderOperator<Query<T>> _parent = new BuilderOperator<>(this, this.buffer);
+			return new Group<>(_parent, this.buffer);
 		}
 		
 		
@@ -62,50 +99,11 @@ public final class SolrQ {
 		 * @return parent
 		 */
 		public Parent<BuilderOperator<Query<T>>> parent() {
-			
-			BuilderOperator<Query<T>> b = new BuilderOperator<>(this, this.buffer);
 			this.buffer.append("{!parent");
-			
-			return new Parent<>(b, this.buffer);
+			BuilderOperator<Query<T>> _parent = new BuilderOperator<>(this, this.buffer);
+			return new Parent<>(_parent, this.buffer);
 		}
 		
-	}
-	
-	/**
-	 * @param name
-	 * @param val
-	 * @return builder operator
-	 */
-	public BuilderOperator<Query<SolrQ>> field(String name, String val) {
-		
-		Query<SolrQ> q = new Query<>(this.buffer);
-		this.buffer.append(name + ":" + ClientUtils.escapeQueryChars(val));
-		
-		return new BuilderOperator<>(q, this.buffer);
-		
-	}
-	
-	
-	/**
-	 * @return group
-	 */
-	public Group<Query<SolrQ>> openGroup() {
-		
-		Query<SolrQ> q = new Query<>(this.buffer);
-		this.buffer.append("(");
-		
-		return new Group<>(q, this.buffer);
-	}
-	
-	
-	/**
-	 * @return parent
-	 */
-	public Parent<SolrQ> parent() {
-		
-		this.buffer.append("{!parent");
-		
-		return new Parent<>(this, this.buffer);
 	}
 	
 	/**
@@ -121,6 +119,15 @@ public final class SolrQ {
 		/**  */
 		private StringBuilder buffer;
 		
+		/**  */
+		private StringBuilder which = new StringBuilder();
+		
+		/**  */
+		private StringBuilder v = new StringBuilder();
+		
+		/**  */
+		private StringBuilder children = new StringBuilder();
+		
 		/**
 		 * @param parent
 		 * @param buffer
@@ -132,28 +139,28 @@ public final class SolrQ {
 		
 		
 		/**
-		 * @return parent which
+		 * @return which
 		 */
 		public ParentWhich<Parent<T>> which() {
-			this.buffer.append(" which=(");
-			return new ParentWhich<>(this, this.buffer);
+			this.which.append(" which=(");
+			return new ParentWhich<>(this, this.which);
 		}
 		
 		
 		/**
-		 * @return parent v
+		 * @return v
 		 */
 		public ParentV<Parent<T>> v() {
-			this.buffer.append(" v='");
-			return new ParentV<>(this, this.buffer);
+			this.v.append(" v=('");
+			return new ParentV<>(this, this.v);
 		}
 		
 		
 		/**
-		 * @return parent children
+		 * @return children
 		 */
 		public ParentChildren<Parent<T>> children() {
-			return new ParentChildren<>(this, this.buffer);
+			return new ParentChildren<>(this, this.children);
 		}
 		
 		
@@ -161,6 +168,11 @@ public final class SolrQ {
 		 * @return parent
 		 */
 		public T endParent() {
+			this.buffer.append(this.which);
+			if (!this.v.isEmpty())
+				this.buffer.append(this.v);
+			this.buffer.append("}");
+			this.buffer.append(this.children);
 			return this.parent;
 		}
 	}
@@ -194,7 +206,7 @@ public final class SolrQ {
 		 * @return which operator
 		 */
 		public WhichOperator<ParentWhich<T>, T> field(String name, String val) {
-			this.buffer.append(name + ":" + ClientUtils.escapeQueryChars(val).replace("\\", "\\\\"));
+			appendField(this.buffer, name, val);
 			return new WhichOperator<>(this, this.parent, this.buffer);
 		}
 		
@@ -229,9 +241,10 @@ public final class SolrQ {
 		 * @return v operator
 		 */
 		public VOperator<ParentV<T>, T> field(String name, String val) {
-			this.buffer.append(name + ":" + ClientUtils.escapeQueryChars(val).replace("\\", "\\\\"));
+			appendField(this.buffer, name, val);
 			return new VOperator<>(this, this.parent, this.buffer);
 		}
+		
 	}
 	
 	/**
@@ -263,7 +276,7 @@ public final class SolrQ {
 		 * @return children operator
 		 */
 		public ChildrenOperator<ParentChildren<T>, T> field(String name, String val) {
-			this.buffer.append(name + ":" + ClientUtils.escapeQueryChars(val).replace("\\", "\\\\"));
+			appendField(this.buffer, name, val);
 			return new ChildrenOperator<>(this, this.parent, this.buffer);
 		}
 		
@@ -277,13 +290,6 @@ public final class SolrQ {
 			
 		}
 		
-		
-		/**
-		 * @return parent
-		 */
-		public T endChildren() {
-			return this.parent;
-		}
 	}
 	
 	/**
@@ -315,12 +321,37 @@ public final class SolrQ {
 		 * @return group operator
 		 */
 		public GroupOperator<Group<T>, T> field(String name, String val) {
-			
-			this.buffer.append(name + ":" + ClientUtils.escapeQueryChars(val));
+			appendField(this.buffer, name, val);
 			return new GroupOperator<>(this, this.parent, this.buffer);
-			
 		}
 		
+		
+		/**
+		 * @return group
+		 */
+		public Group<Group<T>> openGroup() {
+			this.buffer.append("(");
+			return new Group<>(this, this.buffer);
+		}
+		
+		
+		/**
+		 * @return parent
+		 */
+		public T closeGroup() {
+			this.buffer.append(")");
+			return this.parent;
+		}
+		
+		
+		/**
+		 * @return parent
+		 */
+		public Parent<GroupOperator<Group<T>, T>> parent() {
+			this.buffer.append("{!parent");
+			GroupOperator<Group<T>, T> _parent = new GroupOperator<>(this, this.parent, this.buffer);
+			return new Parent<>(_parent, this.buffer);
+		}
 	}
 	
 	/**
@@ -491,13 +522,12 @@ public final class SolrQ {
 		
 		
 		/**
-		 * @return group parent
+		 * @return parent
 		 */
 		public G closeGroup() {
 			super.buffer.append(")");
 			return this.groupParent;
 		}
-		
 	}
 	
 	/**
@@ -557,7 +587,7 @@ public final class SolrQ {
 		 * @return v parent
 		 */
 		public V endV() {
-			super.buffer.append("')}");
+			super.buffer.append("')");
 			return this.vParent;
 		}
 	}
@@ -609,10 +639,11 @@ public final class SolrQ {
 		
 		
 		/**
-		 * @return Builds and returns the complete Solr query string.
+		 * @return query as string.
 		 */
 		public String build() {
 			return super.buffer.toString();
 		}
 	}
+	
 }
