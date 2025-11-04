@@ -5,6 +5,10 @@ import org.apache.solr.client.solrj.SolrServerException;
 import com.github.solr.bean.AbstractSolrBean;
 
 /**
+ * Repository interface for managing {@link AbstractSolrBean} instances in Solr.
+ * <p>
+ * Provides basic operations to save and remove Solr beans from the configured Solr core. Implementations are expected to handle commits and error propagation as needed.
+ * 
  * @author Ilja Avelidi
  *
  */

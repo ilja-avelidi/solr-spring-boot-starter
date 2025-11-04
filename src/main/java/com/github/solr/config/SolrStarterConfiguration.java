@@ -14,8 +14,19 @@ import com.github.solr.repository.SolrBeanRepository;
 import com.github.solr.repository.SolrBeanRepositoryImpl;
 
 /**
- * @author Ilja Avelidi
+ * Spring configuration class for initializing Solr integration.
+ * <p>
+ * This configuration provides the following beans:
+ * <ul>
+ * <li>{@link SolrClient} - HTTP/2 Solr client configured with the Solr core URL</li>
+ * <li>{@link SolrConnectionVerifier} - verifies Solr connectivity at startup with highest precedence</li>
+ * <li>{@link SolrAsyncIndexer} - async indexing helper for Solr documents</li>
+ * <li>{@link SolrBeanRepository} - repository implementation for Solr beans</li>
+ * </ul>
+ * <p>
+ * Scheduling is enabled to allow background tasks like health checks or async indexing. The Solr core URL is injected from the property <code>solr.core.url</code>.
  *
+ * @author Ilja Avelidi
  */
 @Configuration
 @EnableScheduling
