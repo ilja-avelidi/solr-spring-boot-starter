@@ -11,6 +11,12 @@ import org.springframework.context.ApplicationEventPublisher;
 import com.github.solr.event.SolrReadyEvent;
 
 /**
+ * Verifies the connectivity to a Solr core on application startup.
+ * <p>
+ * Implements {@link ApplicationRunner} to perform the check after the Spring Boot application context is initialized. If the connection is successful, it publishes a {@link SolrReadyEvent} to signal that Solr is ready for use.
+ * <p>
+ * In case of a failed connection, the error is logged. This component ensures that other parts of the application can safely interact with Solr only after it is available.
+ * 
  * @author Ilja Avelidi
  *
  */

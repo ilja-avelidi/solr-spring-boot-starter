@@ -18,6 +18,18 @@ import com.github.solr.event.SolrBeanRemovedEvent;
 import com.github.solr.repository.SolrBeanRepository;
 
 /**
+ * Asynchronous Solr indexer that listens for Solr bean events and processes them in a background queue.
+ * <p>
+ * This component handles {@link SolrBeanIndexEvent} and {@link SolrBeanRemoveEvent}:
+ * <ul>
+ * <li>{@link SolrBeanIndexEvent} triggers the asynchronous saving of a Solr bean to the index, after which a {@link SolrBeanIndexedEvent} is published.</li>
+ * <li>{@link SolrBeanRemoveEvent} triggers the asynchronous removal of a Solr bean from the index, after which a {@link SolrBeanRemovedEvent} is published.</li>
+ * </ul>
+ * <p>
+ * Events are queued in a {@link LinkedBlockingQueue} to allow asynchronous processing without blocking the publisher. The queue is processed periodically according to the configured fixed rate (default 200ms).
+ * <p>
+ * This class is intended to centralize all asynchronous Solr indexing/removal actions and ensure that events are handled in the order they are received.
+ * 
  * @author Ilja Avelidi
  *
  */

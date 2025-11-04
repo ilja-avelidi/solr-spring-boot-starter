@@ -8,6 +8,10 @@ import org.springframework.stereotype.Repository;
 import com.github.solr.bean.AbstractSolrBean;
 
 /**
+ * Default implementation of {@link SolrBeanRepository} using a {@link SolrClient}.
+ * <p>
+ * Provides methods to save and remove Solr beans from the configured Solr core. Each operation immediately commits the changes to ensure that the Solr index reflects the updates.
+ * 
  * @author Ilja Avelidi
  *
  */
