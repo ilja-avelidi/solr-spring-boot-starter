@@ -73,7 +73,7 @@ solr.core.url=http://localhost:8983/solr/test
 
 ## Example Configuration Files
 
-A working example of `schema.xml` and `solrconfig.xml` is provided in the [demo project](https://github.com/avelidi/solr-demo-config).  
+A working example of `schema.xml` and `solrconfig.xml` is provided in the [demo project](https://github.com/ilja-avelidi/demo-projects/tree/master/solr-spring-boot-starter-demo).  
 
 These example files define a minimal Solr schema compatible with the starter.
 
@@ -91,11 +91,11 @@ These example files define a minimal Solr schema compatible with the starter.
 ## How It Works
 ### 1. Automatic Configuration
 
-The SolrAutoConfiguration and SolrStarterConfiguration classes register:
-- A SolrClient (based on Http2SolrClient)
-- A SolrConnectionVerifier that checks the Solr connection at startup
-- A SolrAsyncIndexer for asynchronous document operations
-- A SolrBeanRepository abstraction for saving and removing beans
+The `SolrAutoConfiguration` and `SolrStarterConfiguration` classes register:
+- A `SolrClient` (based on Http2SolrClient)
+- A `SolrConnectionVerifier` that checks the Solr connection at startup
+- A `SolrAsyncIndexer` for asynchronous document operations
+- A `SolrBeanRepository` abstraction for saving and removing beans
 
 ### 2. Asynchronous Indexing
 
