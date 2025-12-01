@@ -20,9 +20,9 @@ Add the starter to your Spring Boot application's `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>com.github.avelidi</groupId>
+    <groupId>io.github.ilja-avelidi</groupId>
     <artifactId>solr-spring-boot-starter</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
