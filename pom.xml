@@ -2,25 +2,30 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.github.avelidi</groupId>
+    <groupId>io.github.ilja-avelidi</groupId>
     <artifactId>solr-spring-boot-starter</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <name>Solr Spring Boot Starter</name>
+    <version>1.0.0</version>
+    <name>${project.groupId}:${project.artifactId}</name>
     <description>A lightweight Spring Boot starter that simplifies integration with Apache Solr using SolrJ.</description>
     <url>https://github.com/ilja-avelidi/solr-spring-boot-starter</url>
     <licenses>
         <license>
-            <name>Apache License 2.0</name>
-            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+    		<name>The Apache License, Version 2.0</name>
+    		<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
     <developers>
         <developer>
             <name>Ilja Avelidi</name>
             <organization>Individual Developer</organization>
-            <url>https://github.com/ilja-avelidi</url>
+            <organizationUrl>https://github.com/ilja-avelidi</organizationUrl>
         </developer>
     </developers>
+    <scm>
+    	<connection>scm:git:git://github.com/ilja-avelidi/solr-spring-boot-starter.git</connection>
+    	<developerConnection>scm:git:ssh://github.com/ilja-avelidi/solr-spring-boot-starter.git</developerConnection>
+    	<url>https://github.com/ilja-avelidi/solr-spring-boot-starter</url>
+	</scm>
     <properties>
         <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -55,5 +60,18 @@
 			<version>5.11.0</version>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+	</dependencies>	
+	<build>
+		<plugins>
+			<plugin>
+          		<groupId>org.sonatype.central</groupId>
+          		<artifactId>central-publishing-maven-plugin</artifactId>
+          		<version>0.9.0</version>
+          		<extensions>true</extensions>
+          		<configuration>
+            		<publishingServerId>central</publishingServerId>
+          		</configuration>
+        	</plugin>
+		</plugins>
+	</build>
 </project>
